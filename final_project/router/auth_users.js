@@ -57,40 +57,20 @@ regd_users.post("/login", (req,res) => {
 regd_users.put("/auth/review/:isbn", (req, res) => {
   //Write your code here
   const isbn = req.params.isbn;
-  const review = req.params.review;
 
-  const username = req.body.username;
+  let filtered_book = books[isbn];
 
-  users.forEach((user) => {
-    //check is the username is in the users
-    if(user.username != username) {
-        return res.send(403).json({message: "Please login to add or alter a book review."})
-    } else {
-        //then filter the book by the isbn
-        let filtered_books = books.filter((book) => book.isbn === isbn);
-        
-        //then change the review for that book and return a new list of books
-
-        if(filtered_books.length >0) {
-            let one_book = filtered_books[0];
-        
-            if(review) {
-                one_book.review = review;
-            }
-            
-        }
-        books = books.filter((book) => book.isbn != isbn);
-        books.push(one_book);
-
+  if(filtered_book) {
+    let review = req.query.review;
+    let reviewer = req.session.authorization['username']; //get the username from the session
+    if(review) {
+        filtered_book['reviews'][reviewer] = review;
+        books[isbn] = filtered_book;
     }
-  })
-
-
-// that filters that book out and adds the book back in at the bottom with the new review
-
-
-
-  return res.status(300).json({message: "Yet to be implemented"});
+    res.send(`The review of the book with isbn ${isbn} has been updated`);
+  } else {
+    res.send("Unable to fine the ISBN")
+  }
 });
 
 module.exports.authenticated = regd_users;
