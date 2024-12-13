@@ -40,8 +40,8 @@ regd_users.post("/login", (req,res) => {
   if(authenticatedUser(username, password)) {
     let accessToken = jwt.sign({
         data: password
-    }, 'access', {expiresIn: 100 * 100});
-    
+    }, 'access');
+    //{expiresIn: 100 * 100}
     req.session.authorization = {
         accessToken, username
     };
@@ -57,7 +57,6 @@ regd_users.post("/login", (req,res) => {
 regd_users.put("/auth/review/:isbn", (req, res) => {
   //Write your code here
   const isbn = req.params.isbn;
-
   let filtered_book = books[isbn];
 
   if(filtered_book) {
@@ -69,9 +68,27 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
     }
     res.send(`The review of the book with isbn ${isbn} has been updated`);
   } else {
-    res.send("Unable to fine the ISBN")
+    res.send("Unable to find the ISBN")
   }
 });
+
+regd_users.delete("/auth/review/:isbn", (req, res) => {
+    const isbn = req.params.isbn;
+    let user = req.session.authorization['username'];
+    let filtered_book = books[isbn]
+
+    if(isbn) {
+        if(filtered_book['review'][user] === user) {
+            delete filtered_book['review'];
+            res.send(`The review of the book ${isbn} that ${user} wrote has been deleted`);
+
+        } else {
+            res.send("You are not authorized to edit this review");
+        }
+    } else {
+        res. send("Please provide an ISBN number")
+    }
+})
 
 module.exports.authenticated = regd_users;
 module.exports.isValid = isValid;
