@@ -74,21 +74,15 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
 
 regd_users.delete("/auth/review/:isbn", (req, res) => {
     const isbn = req.params.isbn;
-    let user = req.session.authorization['username'];
-    let filtered_book = books[isbn]
-
-    if(isbn) {
-        if(filtered_book['review'][user] === user) {
-            delete filtered_book['review'];
-            res.send(`The review of the book ${isbn} that ${user} wrote has been deleted`);
-
-        } else {
-            res.send("You are not authorized to edit this review");
-        }
+    let reviewer = req.session.authorization['username'];
+    let filtered_review = books[isbn]["reviews"];
+    if (filtered_review[reviewer]){
+        delete filtered_review[reviewer];
+        res.send(`The review of the book ${isbn} that ${reviewer} wrote has been deleted`);
     } else {
-        res. send("Please provide an ISBN number")
+        res.send( "Can't delete, as this reveiw was added by a different user")
     }
-})
+});
 
 module.exports.authenticated = regd_users;
 module.exports.isValid = isValid;
