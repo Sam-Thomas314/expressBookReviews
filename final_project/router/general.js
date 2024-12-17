@@ -41,15 +41,28 @@ public_users.post("/register", (req,res) => {
 // Get the book list available in the shop
 public_users.get('/',function (req, res) {
   //Write your code here
-
-  
-  res.send(JSON.stringify(books, null, 4));
+    const book_call = new Promise((resolve, reject) => {
+        setTimeout(() => {
+            try {
+                res.send(JSON.stringify(books, null, 4));
+            } catch(err) {
+                reject(err)
+            }
+        },3000)
+    });
+    console.log(book_call);
+    book_call.then(
+        (books) => console.log(books),
+        (err) => console.log("Error in retrieving books")
+    );
   //return res.status(300).json({message: "Yet to be implemented"});
 });
 
 // Get book details based on ISBN
 public_users.get('/isbn/:isbn',function (req, res) {
   //Write your code here
+
+  
   const the_isbn = req.params.isbn;
   let books_by_isbn = [];
 
