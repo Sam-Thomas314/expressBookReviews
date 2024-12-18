@@ -39,22 +39,15 @@ public_users.post("/register", (req,res) => {
 });
 
 // Get the book list available in the shop
-public_users.get('/',function (req, res) {
+public_users.get('/',async (req, res) => {
   //Write your code here
-    const book_call = new Promise((resolve, reject) => {
-        setTimeout(() => {
-            try {
-                res.send(JSON.stringify(books, null, 4));
-            } catch(err) {
-                reject(err)
-            }
-        },3000)
-    });
-    console.log(book_call);
-    book_call.then(
-        (books) => console.log(books),
-        (err) => console.log("Error in retrieving books")
-    );
+    try {
+        const response = await axios.get(LOCAL_BOOKS_API_URL)
+          res.send(JSON.stringify(response.data, null, 4));
+    } catch (error) {
+        // Handle errors
+        res.status(500).json({ message: 'Error fetching book list', error: error.message });
+    }
   //return res.status(300).json({message: "Yet to be implemented"});
 });
 
