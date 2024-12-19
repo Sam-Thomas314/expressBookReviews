@@ -5,6 +5,9 @@ let isValid = require("./auth_users.js").isValid;
 let users = require("./auth_users.js").users;
 const public_users = express.Router();
 
+const LOCAL_BOOKS_API_URL = 'http://localhost:5000/local-books';  //sample url
+
+
 
 public_users.post("/register", (req,res) => {
   //Write your code here
@@ -40,17 +43,33 @@ public_users.post("/register", (req,res) => {
 });
 
 // Get the book list available in the shop
-public_users.get('/',async (req, res) => {
-  //Write your code here
-    try {
-        const response = await axios.get(url);
-          res.send(JSON.stringify(response.data, null, 4));
-    } catch (error) {
-        // Handle errors
-        res.status(500).json({ message: 'Error fetching book list', error: error.message });
-    }
-  //return res.status(300).json({message: "Yet to be implemented"});
-});
+public_users.get('/', function (req, res) {
+
+    new Promise((resolve, reject) => {
+    
+    resolve({"books" : books});
+    
+    })
+    
+    .then((result) => {
+    
+    res.send(result);
+    
+    })
+    
+    .catch((error) => {
+    
+    // Handle any errors that occurred during the Promise chain
+    
+    console.error(error);
+    
+    res.status(500).send('An error occurred');
+    
+    reject(error);
+    
+    });
+    
+    });
 
 // Get book details based on ISBN
 public_users.get('/isbn/:isbn',function (req, res) {
