@@ -31,17 +31,11 @@ public_users.post("/register", (req,res) => {
 public_users.get('/', function (req, res) {
 
     new Promise((resolve, reject) => {
-    
-    resolve({"books" : books});
-    
+        resolve({"books" : books});
     })
-    
     .then((result) => {
-    
-    res.send(result);
-    
+        res.send(result);
     })
-    
     .catch((error) => {
     
     // Handle any errors that occurred during the Promise chain
@@ -61,12 +55,26 @@ public_users.get('/isbn/:isbn',function (req, res) {
   //Write your code here
   const the_isbn = req.params.isbn;
   let books_by_isbn = [];
-  new Promice((resolve, reject) => {
-    resolve ({})
-
-  })
-  
-
+  new Promise((resolve, reject) => {
+        resolve({"books" : books[the_isbn]});
+    })
+    .then((result) => {
+        res.send(result);
+    })
+    .catch((error) => {
+    
+    // Handle any errors that occurred during the Promise chain
+    
+    console.error(error);
+    
+    res.status(500).send('An error occurred');
+    
+    reject(error);
+    
+    });
+    
+    });
+  /*
   let isbns = Object.keys(books);
 
   if(the_isbn) {
@@ -80,10 +88,33 @@ public_users.get('/isbn/:isbn',function (req, res) {
   res.send(JSON.stringify({books_by_isbn}, null, 4));
 
  });
+*/
   
 // Get book details based on author
 public_users.get('/author/:author',function (req, res) {
   //Write your code here
+    const the_author = req.params.author;
+  let books_by_isbn = [];
+  let isbns = Object.keys(books)
+  new Promise((resolve, reject) => {
+        resolve({"author" : books[isbns][the_author]}); 
+    })
+    .then((result) => {
+
+    })
+    .catch((error) => {
+    
+    // Handle any errors that occurred during the Promise chain
+    
+    console.error(error);
+    
+    res.status(500).send('An error occurred');
+    
+    reject(error);
+    
+    });
+
+/*
   let booksbyauthor = [];
   let isbns = Object.keys(books);
   isbns.forEach((isbn) => {
@@ -95,6 +126,7 @@ public_users.get('/author/:author',function (req, res) {
     }
   });
   res.send(JSON.stringify({booksbyauthor}, null, 4))
+  */
 });
 
 // Get all books based on title
