@@ -94,24 +94,32 @@ public_users.get('/isbn/:isbn',function (req, res) {
 public_users.get('/author/:author',function (req, res) {
   //Write your code here
     const the_author = req.params.author;
-  let books_by_isbn = [];
+  let books_by_author = [];
   let isbns = Object.keys(books)
   new Promise((resolve, reject) => {
-        resolve({"author" : books[isbns][the_author]}); 
+    
+    isbns.forEach((isbn) => {
+      if(books[isbn]["author"] === the_author) {
+        books_by_author.push({isbn: isbn, 
+          title: books[isbn].title,
+          author: books[isbn].title, 
+          reviews: books[isbn].reviews
+        });
+      }
+    });
+    if(books_by_author.length > 0) {
+        resolve(books_by_author);
+    } else {
+        reject("That author has not written any books")
+    }
     })
     .then((result) => {
+        res.status(200).send(JSON.stringify({books_by_author: result }, null, 4));
 
     })
     .catch((error) => {
-    
-    // Handle any errors that occurred during the Promise chain
-    
-    console.error(error);
-    
-    res.status(500).send('An error occurred');
-    
-    reject(error);
-    
+        res.status(404).send({message: error});
+    // Handle any errors that occurred during the Promise chain 
     });
 
 /*
@@ -131,6 +139,36 @@ public_users.get('/author/:author',function (req, res) {
 
 // Get all books based on title
 public_users.get('/title/:title',function (req, res) {
+    const the_title = req.params.title;
+    let books_by_title = [];
+    let isbns = Object.keys(books)
+    new Promise((resolve, reject) => {
+      
+      isbns.forEach((isbn) => {
+        if(books[isbn].title === the_title) {
+          books_by_title.push({isbn: isbn, 
+            title: books[isbn].title,
+            author: books[isbn].title, 
+            reviews: books[isbn].reviews
+          });
+        }
+      });
+      if(books_by_title.length > 0) {
+          resolve(books_by_title);
+      } else {
+          reject("There are no books with that title");
+      }
+      })
+      .then((result) => {
+          res.status(200).send(JSON.stringify({books_by_title: result }, null, 4));
+  
+      })
+      .catch((error) => {
+          res.status(404).send({message: error});
+      // Handle any errors that occurred during the Promise chain 
+      });
+
+    /*
     const book_title = req.params.title;
     let booksbytitle = [];
     let isbns = Object.keys(books);
@@ -143,6 +181,8 @@ public_users.get('/title/:title',function (req, res) {
         }
     });
     res.send(JSON.stringify({booksbytitle}, null, 4))
+    */
+
 });
 
 //  Get book review
